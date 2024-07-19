@@ -1,7 +1,7 @@
 ---
 title: "Taller"
 author: "Andrés González Santa Cruz"
-date:  "2024-07-22"
+date:  "2024-07-25"
 format: html
 editor: visual
 ---
@@ -69,7 +69,7 @@ debate_df <- tibble(text = debate)
 #_#_#_#_#_#_#_#_#_#_#_#_
 
 #tidytext tiene varias lsitas de palabras con palabras que sobrarían para analizar (preposiciones, etc.)
-debate_df_prunned1 <-dplyr::filter(debate_df, !text %in% tidytext::stop_words$word)
+debate_df_prunned1 <-dplyr::filter(debate_df, !text %in% c(tidytext::stop_words$word,"blankaudio"))
 
 ```
 
@@ -112,11 +112,11 @@ wordcloud(
 
 ```
 
-Palabras como "going", "done", "sure", "look", "seen", "get", "got", "many", "guy ", "will", "think", "wants", "much", "said" , "just", no son informativas. Por trasparencia las dejamos en esta instancia. Pero debemos eliminarlas.
+Palabras como "going", "done", "sure", "look", "seen", "get", "got", "many", "guy ", "will", "think", "wants", "much", "said" , "just", "blankaudio", no son informativas. Por trasparencia las dejamos en esta instancia. Pero debemos eliminarlas.
 
 ```{r}
 #removemos esas palabras
-debate_prunned2<- removeWords(debate, words = c("going", "done", "sure", "look", "seen", "get", "got", "many", "guy ", "will", "think", "wants",  "much", "said" , "just","lot", "thing", "put", "take", "coming", "ever", "say", "happened", "like", "whole", "named", "lot", "see", "far", "able", "want"))
+debate_prunned2<- removeWords(debate, words = c("going", "done", "sure", "look", "seen", "get", "got", "many", "guy ", "will", "think", "wants",  "much", "said" , "just","lot", "thing", "put", "take", "coming", "ever", "say", "happened", "like", "whole", "named", "lot", "see", "far", "able", "want", "blankaudio"))
 
 eco_corpus_prunned <- debate_prunned2 %>% VectorSource() %>% Corpus(readerControl = list(language = "eng"))
 eco_tdm_prunned <- TermDocumentMatrix(eco_corpus_prunned)
@@ -146,7 +146,7 @@ De las palabras que más destacan se encuentra "president", "country" y "one". P
 ```{r}
 
 #más frecuentes
-eco_df[1:20, ] %>%
+eco_df_prunned[1:20, ] %>%
   #palabras ordenadas por frecuencias
   ggplot(aes(x = reorder(palabra, frec), y = frec)) + 
   #gráfico de barras, con un color celeste
@@ -181,8 +181,11 @@ trigrams <- debate_df_prunned1 %>%
   tidyr::separate(trigram, into = c("word1", "word2", "word3"), sep = " ") %>%
   filter(!word1 %in% stop_words$word) %>%
   filter(!word2 %in% stop_words$word) %>% 
-  filter(!word3 %in% stop_words$word) 
-
+  filter(!word3 %in% stop_words$word) %>% 
+  filter(!word1 %in% "blankaudio") %>%
+  filter(!word2 %in% "blankaudio") %>% 
+  filter(!word3 %in% "blankaudio")
+  
 # Contar las co-ocurrencias
 trigram_counts <- trigrams %>%
   count(word1, word2, word3, sort = TRUE)
@@ -214,30 +217,30 @@ if(!require(topicmodels)){install.packages("topicmodels")}
 if(!require(lares)){install.packages("lares")}
 
 lares::gemini_ask(
-  "what does it mean",
-  secret_key = as.character(readr::read_lines("apikey.txt")),
+  "what is in spanish 'borders'",
+  secret_key = as.character(readr::read_lines(paste0(gsub("Taller_Diplo","",getwd()),"apikey.txt"))),
   url =  Sys.getenv("LARES_GEMINI_API"),
   temperature = 0.5,
   max_tokens = 1024,
-  quiet = T
+  quiet = F
 )
 
 #_#_#_#_#_#_#_#_#_#_#_#_#_#_#_#_#_#_#_#_#_#_#_#_#_#_#_#_#_#_#_#_
 
 # Crear una DocumentTermMatrix
-debate_corpus <- Corpus(VectorSource(debate))
+debate_corpus <- Corpus(VectorSource(eco_corpus_prunned))
 debate_dtm <- DocumentTermMatrix(debate_corpus)
 
 # Ajustar un modelo LDA (Latent Dirichlet Allocation) con 5 temas
-lda_model <- LDA(debate_dtm, k = 4)
+lda_model <- topicmodels::LDA(debate_dtm, k = 4)
 
 # Mostrar los términos más importantes para cada tema
-terms(lda_model, 10)
+topicmodels::terms(lda_model, 10)
 
 #_#_#_#_#_#_#_#_#_#_#_#_#_#_#_#_#_#_#_#_#_#_#_#_#_#_#_#_#_#_#_#_
 
 # Extraer el texto del documento
-text <- Corpus(VectorSource(debate))
+text <- Corpus(VectorSource(eco_corpus_prunned))
 text_data <- as.character(text)
 
 # Obtener los sentimientos del texto

@@ -47,6 +47,9 @@ rsconnect/
 debate.wav
 audio.wav
 
+#eliminar modelo llm
+ggml-tiny.bin
+
 #descartar shiny folder
 _shiny/*
 
