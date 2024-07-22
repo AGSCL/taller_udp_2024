@@ -11,7 +11,7 @@
 
 0. Al principio tenemos dos opciones: o bajar el audio y transcribir en Python o en R. Ambas opciones requieren que instalen [FFmpeg](https://ffmpeg.org/download.html), un reconocido codificador de audio para transformarlo desde formato video a .wav, y un programa para bajar video llamado [yt-dlp](https://github.com/yt-dlp/yt-dlp), que baja archivos de audio o video. Si no quiere arriesgarse a instalar archivos de terceros, puede saltar el video introductorio y el punto 1 a continuación.
 
-1.a. **Un ejemplo transcribiendo audio mediante modelos de lenguaje en grandes volúmenes en Python (taller_previo.py)** 
+1.a. **Un ejemplo transcribiendo audio mediante modelos de lenguaje en grandes volúmenes en Python ((taller_previo.py)[taller_previo.py])** 
    - Generamos el archivo  [https://raw.githubusercontent.com/AGSCL/taller_udp_2024/main/debate.txt](debate.txt)
    - Los paquetes utilizados fueron los siguientes:
    - **yt-dlp**: Permite descargar y extraer audio de videos de YouTube.
@@ -23,7 +23,7 @@
    - **ffmpeg-python**: Enlace a FFmpeg para la manipulación de multimedia.
    - **openai-whisper**: Biblioteca específica para el modelo Whisper de OpenAI.
 
-1.b. **Un ejemplo transcribiendo audio mediante modelos de lenguaje en grandes volúmenes en R (taller_previo.R)**
+1.b. **Un ejemplo transcribiendo audio mediante modelos de lenguaje en grandes volúmenes en R ((taller_previo.R)[taller_previo.R])**
    - Generamos el archivo  [https://raw.githubusercontent.com/AGSCL/taller_udp_2024/main/debate.txt](debate.txt)
    - Los paquetes utilizados fueron los siguientes:
    - **yt-dlp**: Permite descargar y extraer audio de videos de YouTube.
